@@ -139,6 +139,11 @@ export class NgbInputDatepicker implements OnChanges,
   @Input() container: string;
 
   /**
+   * Whether to auto close on date select. Defaults to true
+   */
+  @Input() autoClose: boolean;
+
+  /**
    * An event fired when navigation happens and currently displayed month changes.
    * See NgbDatepickerNavigateEvent for the payload info.
    */
@@ -237,7 +242,10 @@ export class NgbInputDatepicker implements OnChanges,
       this._cRef.instance.registerOnChange((selectedDate) => {
         this.writeValue(selectedDate);
         this._onChange(selectedDate);
-        this.close();
+
+        if (this.autoClose) {
+          this.close();
+        }
       });
 
       // focus handling
@@ -315,7 +323,11 @@ export class NgbInputDatepicker implements OnChanges,
 
   private _subscribeForDatepickerOutputs(datepickerInstance: NgbDatepicker) {
     datepickerInstance.navigate.subscribe(date => this.navigate.emit(date));
-    datepickerInstance.select.subscribe(() => { this.close(); });
+    datepickerInstance.select.subscribe(() => {
+      if (this.autoClose) {
+        this.close();
+      }
+    });
   }
 
   private _writeModelValue(model: NgbDate) {
